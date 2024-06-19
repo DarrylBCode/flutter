@@ -195,7 +195,7 @@ class RenderSimpleBuilderTableViewport extends RenderTwoDimensionalViewport {
 
   @override
   TestExtendedParentData parentDataOf(RenderBox child) {
-    return child.parentData! as TestExtendedParentData;
+    return super.parentDataOf(child) as TestExtendedParentData;
   }
 
   @override
@@ -509,4 +509,40 @@ class TestParentDataWidget extends ParentDataWidget<TestExtendedParentData> {
 
   @override
   Type get debugTypicalAncestorWidgetClass => SimpleBuilderTableViewport;
+}
+
+class KeepAliveOnlyWhenHovered extends StatefulWidget {
+  const KeepAliveOnlyWhenHovered({ required this.child, super.key });
+
+  final Widget child;
+
+  @override
+  KeepAliveOnlyWhenHoveredState createState() => KeepAliveOnlyWhenHoveredState();
+}
+
+class KeepAliveOnlyWhenHoveredState extends State<KeepAliveOnlyWhenHovered> with AutomaticKeepAliveClientMixin {
+  bool _hovered = false;
+
+  @override
+  bool get wantKeepAlive => _hovered;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() {
+          _hovered = true;
+          updateKeepAlive();
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          _hovered = false;
+          updateKeepAlive();
+        });
+      },
+      child: widget.child,
+    );
+  }
 }
